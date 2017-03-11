@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
 	  "node-static": "*",
+	  "requirejs": "^2.0",
 	  "phaser-ce": "^2.0"
   }
 }
