@@ -105,7 +105,7 @@ function collectStar(player,star) {
 function createStars() {
     stars=game.add.group();
     stars.enableBody=true;
-    var star = stars.create(Math.random()*game.world.width,0,'star');
+    var star = stars.create(Math.random()*(game.world.width-32)+32,0,'star');
     star.body.gravity.y = 800;
     star.body.bounce.y=0.3+Math.random()*0.2;    
 }
