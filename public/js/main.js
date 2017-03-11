@@ -1,7 +1,6 @@
 var scope=0;
 var lives=3;
 var liveTime=3;
-var star;
 var isOver=false;
 
 var game=new Phaser.Game (800,600, Phaser.AUTO, '', {preload: preload, create:create, update:update});
@@ -121,7 +120,8 @@ function collectStar(player,star) {
 
 function createStars() {
     liveTime=4;
-    star = game.add.sprite(Math.random()*(game.world.width),0,'star');
+    var newPos=Math.random()*(game.world.width-32);
+    star = game.add.sprite(newPos<5?5:newPos,0,'star');
     game.physics.arcade.enable(star);
     star.body.gravity.y = 800;
     star.body.bounce.y=0.3+Math.random()*0.2;  
