@@ -128,8 +128,10 @@ function createStars() {
 }
 
 function starLiveTimer() {
-    liveTime--;
-    if (liveTime<0) starDeath();    
+    if (!isOver) {
+        liveTime--;
+        if (liveTime<0) starDeath();
+    }   
 }
 
 function starDeath() {
@@ -138,14 +140,14 @@ function starDeath() {
     var bomb=bombs.getFirstExists(false);
     bomb.reset(star.x,star.y);
     bomb.play('boom',30,false,true);
-    createStars();
     if (lives<0) {
         isOver=true;
 
         _scope = game.add.text(430,320, "КОНЕЦ", {
-        font: "70px Arial",
-        fill: "#000"
-    });
-
+            font: "70px Arial",
+            fill: "#000"
+        });
+    } else {
+        createStars();
     }
 }
