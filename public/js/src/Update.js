@@ -1,8 +1,7 @@
 define(function(require){
-    var Phaser = require('Phaser'),
-    createStars = require('game/CreateStar');
+    var createStars = require('game/CreateStar');
 
-return function (game) {
+  return function (game) {
       if (!game.isOver) {
           //Добавим проверку на столкновения
           var hitPlatform = game.physics.arcade.collide(player,platforms);

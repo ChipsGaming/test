@@ -5,10 +5,9 @@ define(function(require){
     Update = require('game/Update'),
     createStars = require('game/CreateStar');
 
-  var game=new Phaser.Game (800,600, Phaser.AUTO, '', {
+  return new Phaser.Game (800,600, Phaser.AUTO, '', {
     preload: Preload,
     create: Create,
     update: Update
   }); 
-  return game;
 });
