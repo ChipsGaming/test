@@ -1,7 +1,6 @@
 define(function(require){
   var createStars = require('game/CreateStar');
 
-
   function starDeath(game, star) {
       star.kill();
       game.lives--;
