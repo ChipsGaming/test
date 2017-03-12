@@ -20,6 +20,8 @@ define(function(require){
           } else if (cursors.right.isDown) {
               player.body.velocity.x=450;
               player.animations.play('right');
+          } else if (cursors.down.isDown) {
+                player.body.velocity.y=450;
           } else {
               player.animations.stop();
               player.frame=4;
