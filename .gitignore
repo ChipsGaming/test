@@ -1,2 +1,3 @@
 node_modules/
-js/test.js
+public/js/test.js
+public/test.html
