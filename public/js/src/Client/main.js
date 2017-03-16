@@ -1,8 +1,6 @@
 define ( function (require) {
     var Phaser=require('Phaser');
-    var World = require('modules/World');   
-
-    world=new World();
+    var World = require('modules/World');
 
     //var players={};
     var client = new Eureca.Client();
@@ -16,15 +14,9 @@ define ( function (require) {
             preload: preload,
             create: create,
             update: update
-        });
+        }); 
     
-    World.prototype.createSprite=function(id) {
-        var player=this.players[id];
-        var unit=game.add.sprite(0,0,'star');
-        game.physics.arcade.enable(unit);
-        player.sprite=unit;
-        return player;
-    }
+     world=new World(5,game);
 
     //-------Proxy
 
@@ -37,38 +29,15 @@ define ( function (require) {
     }
 
     client.exports.kill=function (id) {
-
         world.killPlayer(id); 
-        /*if (players[id]!=undefined) {
-            players[id].kill();
-            delete players[id]; 
-            console.log('kill player ',id);
-        }    */
     }
 
-    client.exports.update=world.updateState;/*function (id,state) {  
-        //console.log(' update: ',state);
-
-        world.updateState(id,state)
-
-        if (players[id]==undefined) addPlayer(id);
-
-        if (id!=myId) {
-            var player=players[id];
-            if(player!=undefined) {
-                player.x=state.x;
-                player.y=state.y;
-            }
-        }
-
-    }*/
+    client.exports.update=function (id,state) {
+        world.setPlayerState(id,state);
+    }
 
     client.exports.sendResult=function (state) {
         world.setPlayerState(myId,state);
-        /*var player=players[myId];
-        player.x=state.x;
-        player.y=state.y;*/
-        //console.log(state);
     }
 
     //--------
@@ -81,8 +50,8 @@ define ( function (require) {
     function create(game) {
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.add.sprite(0,0,'background');
-        /*var player=game.add.sprite(0,0,'star');  
-        players[myId]=player;*/
+        //var player=game.add.sprite(0,0,'star');  
+        //world.createSprite(myId);
         cursors=game.input.keyboard.createCursorKeys();
     }
 

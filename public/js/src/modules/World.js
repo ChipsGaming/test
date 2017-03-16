@@ -4,9 +4,18 @@ if(typeof define !== 'function'){
 
 define(function (require) {
 
-    function World (step) {
+    function World (step, game) {
+        this.game=game;
         this.players={};
         this.step=step;
+    }
+
+    World.prototype.createSprite=function(id) {        
+        var player=this.players[id]||this.respawnPlayer(id,undefined);
+        var unit=this.game.add.sprite(0,0,'star');
+        this.game.physics.arcade.enable(unit);
+        player.sprite=unit;
+        return player;
     }
 
     //Выполняет команду игрока в симуляторе
@@ -30,10 +39,16 @@ define(function (require) {
 
     //УДаляет игрока
     World.prototype.killPlayer=function (id) {
-        delete this.players[id];    
-        for (var c in this.players) {
-            var remote = this.players[c].remote;
-            remote.kill(id);
+
+        var sprite=this.players[id].sprite;
+        delete this.players[id];
+        if (sprite!=undefined) {            //Client side
+                   sprite.kill();
+        } else {                            //Server side
+            for (var c in this.players) {   
+                var remote = this.players[c].remote;
+                remote.kill(id);
+            }
         }
     }
 
@@ -43,13 +58,11 @@ define(function (require) {
             var player=this.players[id];
             var remote=player.remote;            
             for (var subId in this.players) {
-                if (id!=player.id) {
-                    var state={}; 
-                    var el=this.players[subId]
-                    state.x=el.x;
-                    state.y=el.y;
-                    remote.update(subId,state);  
-                }              
+                var state={}; 
+                var el=this.players[subId]
+                state.x=el.x;
+                state.y=el.y;
+                remote.update(subId,state);               
             }
         }
     }
@@ -69,7 +82,7 @@ define(function (require) {
 
     World.prototype.getStates=function() {
         return this.players;
-    }
+    }    
 
     return World;    
 });
