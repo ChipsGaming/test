@@ -1,6 +1,8 @@
 define ( function (require) {
     var Phaser=require('Phaser');
     var World = require('modules/World');
+    var staticSettings=require('modules/StaticSettings');
+    var UnitState=require('modules/UnitState');
 
     //var players={};
     var client = new Eureca.Client();
@@ -8,7 +10,7 @@ define ( function (require) {
     var serverProxy;
     var cursors;
     var cmdPos=0;
-    var cmds=[];
+    var cmds={};
 
     game = new Phaser.Game (800,600, Phaser.AUTO, '', {
             preload: preload,
@@ -16,7 +18,7 @@ define ( function (require) {
             update: update
         }); 
     
-     world=new World(5,game);
+     world=new World(staticSettings.step.step,game);
 
     //-------Proxy
 
@@ -37,7 +39,11 @@ define ( function (require) {
     }
 
     client.exports.sendResult=function (state) {
-        world.setPlayerState(myId,state);
+        var localState=cmds[state.cmdId];
+        if (localState!=undefined) {
+            if (localState)
+            world.setPlayerState(myId,state);
+        }
     }
 
     //--------
@@ -50,23 +56,24 @@ define ( function (require) {
     function create(game) {
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.add.sprite(0,0,'background');
-        //var player=game.add.sprite(0,0,'star');  
-        //world.createSprite(myId);
         cursors=game.input.keyboard.createCursorKeys();
     }
 
     function update(game) {
-            var data={left:{}, right:{}, up:{}, down:{}};
-            data.id=myId;
-            data.left.isDown=cursors.left.isDown;
-            data.right.isDown=cursors.right.isDown;
-            data.up.isDown=cursors.up.isDown;
-            data.down.isDown=cursors.down.isDown;
-            data.cmdId=cmdPos;
-            if (data.left.isDown||data.right.isDown||data.up.isDown||data.down.isDown) {
-                    cmds[cmdPos]=data;
-                    cmdPos++;
-                    serverProxy.changeState(data);
+            var data=new UnitState(myId,0,0,myId,undefined);
+            if (cursors.left.isDown) data.addCommand('left'); 
+            if (cursors.right.isDown) data.addCommand('right'); 
+            if (cursors.up.isDown) data.addCommand('up');
+            if (cursors.down.isDown) data.addCommand('down');
+
+            if (data.isModifiable()) {
+                data.cmdId=cmdPos;                
+                cmdPos++;                    
+                serverProxy.changeState(data);
+                
+                cmds[cmdPos]={};
+                cmds[cmdPos].data=data;
+                cmds[cmdPos].state=world.doAction(data);                            
             }
     }
     

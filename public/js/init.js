@@ -6,6 +6,5 @@ requirejs.config({
 
     // Game
     modules: 'public/js/src/modules',
-    game: 'public/js/src/client'
   }
-})(['game/main']);
+})(['modules/Client']);

@@ -4,6 +4,8 @@ if(typeof define !== 'function'){
 
 define(function (require) {
 
+    UnitState=require('./UnitState');
+
     function World (step, game) {
         this.game=game;
         this.players={};
@@ -23,12 +25,18 @@ define(function (require) {
         var id = data.id;
         var player=this.players[id];
         if (player!=undefined) {
-            player.x+=data.left.isDown?-1*this.step:0;
-            player.x+=data.right.isDown?this.step:0;
-            player.y+=data.down.isDown?this.step:0;
-            player.y+=data.up.isDown?-1*this.step:0;
+            for(var c in data.keys) {
+                var cmd=data.keys[c];                
+                player.x+=cmd=='left'?-1*this.step:0;
+                player.x+=cmd=='right'?this.step:0;
+                player.y+=cmd=='down'?this.step:0;
+                player.y+=cmd=='up'?-1*this.step:0;
+            }
         }
-        return {x:player.x, y:player.y, cmdId:data.cmdId, remote:player.remote};
+        var state=new UnitState(id,player.x,player.y);
+        state.remote=player.remote;        
+        state.cmdId=data.cmdId;
+        return state;
     }
 
     //Создает игрока

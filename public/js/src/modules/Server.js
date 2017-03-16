@@ -3,10 +3,12 @@ if(typeof define !== 'function'){
 }
 
 define(function(require){
-    var queue=require('./Queue.js');
-    var netCore=require('./NetCore.js');
-    var staticSettings=require('./StaticSettings.js');
-    World=require('./World.js');
+    var queue=require('./Queue');
+    var netCore=require('./NetCore');
+    var staticSettings=require('./StaticSettings');
+
+    World=require('./World');
+    UnitState=require('./UnitState');
     
     var netServer=netCore.proxy;
     var server=netCore.server;
