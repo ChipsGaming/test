@@ -1,9 +1,12 @@
 define ( function (require) {
-    var Phaser=require('Phaser');
-    var World = require('modules/World');
-    var staticSettings=require('modules/StaticSettings');
-    var UnitState=require('modules/UnitState');
-    var cmdQueue=require('modules/Queue');
+    Phaser=require('Phaser');
+    World = require('modules/World');
+    UnitState=require('modules/UnitState');
+    Queue= require('modules/Queue');
+
+    var staticSettings=require('modules/StaticSettings');   
+
+    var cmdQueue=new Queue();
 
     //var players={};
     var client = new Eureca.Client();
@@ -11,6 +14,8 @@ define ( function (require) {
     var serverProxy;
     var cursors;
     var cmdId=0;
+
+    var lastId=-1;
 
     game = new Phaser.Game (800,600, Phaser.AUTO, '', {
             preload: preload,
@@ -43,16 +48,21 @@ define ( function (require) {
 
     client.exports.sendResult=function (state) {
         while (cmdQueue.has()) {
-            var cmd=cmdQueue.shift();
-            if (cmd.data.cmdId<state.cmdId) continue;
-            if (cmd.data.cmdId==state.cmdId) {
-                if (cmd.state.equal(state)) break;
-                world.setPlayerState(myId,state);                
+
+            if (state.cmdId>=lastId) {
+                lastId=state.cmdId;
+
+                var cmd=cmdQueue.shift();
+                if (cmd.data.cmdId<state.cmdId) continue;
+                if (cmd.data.cmdId==state.cmdId) {
+                    if (cmd.state.equal(state)) break;
+                    console.log(cmd.state,state);
+                    world.setPlayerState(myId,state);                
+                }
+                world.doAction(cmd.data);
             }
-            world.doAction(cmd.data);
         }
     }
-
 
     function preload(game) {
         game.load.image('background','img/background.png');
@@ -66,19 +76,20 @@ define ( function (require) {
     }
 
     function update(game) {
-            var data=new UnitState(myId,0,0,myId,undefined);
+            var data=new UnitState(myId,0,0);
             if (cursors.left.isDown) data.addCommand('left'); 
             if (cursors.right.isDown) data.addCommand('right'); 
             if (cursors.up.isDown) data.addCommand('up');
             if (cursors.down.isDown) data.addCommand('down');
 
             if (data.isModifiable()) {
-                data.cmdId=cmdId;  
+                var tId=cmdId;
+                cmdId++;
+                data.cmdId=tId;  
                 serverProxy.changeState(data);
                 var cmd={data:data, state:world.doAction(data)};
                 cmdQueue.push(cmd);
                 world.setPlayerState(myId,cmd.state);
-                cmdId++;
             }
     }
     

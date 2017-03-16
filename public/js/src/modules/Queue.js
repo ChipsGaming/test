@@ -23,5 +23,5 @@ define(function(require){
         return this.queue.length>0;
     }
 
-    return new ActionsQueue();
+    return ActionsQueue;
 });

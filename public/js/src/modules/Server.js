@@ -3,18 +3,20 @@ if(typeof define !== 'function'){
 }
 
 define(function(require){
-    var queue=require('./Queue');
-    var netCore=require('./NetCore');
-    var staticSettings=require('./StaticSettings');
-
     World=require('./World');
     UnitState=require('./UnitState');
+    ActionsQueue= require('./ActionsQueue');
+
+    var netCore=require('./NetCore');
+    var staticSettings=require('./StaticSettings');    
     
     var netServer=netCore.proxy;
     var server=netCore.server;
     var world=new World(staticSettings.step);
+    var queue=new ActionsQueue();
 
     const tickrate=staticSettings.tickrate;
+
 
 
     netServer.exports.changeState = function (data) {
@@ -24,6 +26,8 @@ define(function(require){
     netServer.onConnect(function (conn) {
         console.log("Client ", conn.id, " adr:",conn.remoteAddress);
 
+        queue.regId(conn.id);
+
         var remote =netServer.getClient(conn.id);
 
         world.respawnPlayer(conn.id,remote);
@@ -32,6 +36,7 @@ define(function(require){
 
     netServer.onDisconnect(function (conn){
         world.killPlayer(conn.id);
+        queue.unregId(conn.id);
     });
 
     //Выполнить все задачи очереди
