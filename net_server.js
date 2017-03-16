@@ -1,0 +1,1 @@
+require('./public/js/src/modules/Server.js');

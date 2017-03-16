@@ -2,7 +2,7 @@
   "name": "test",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "net_server.js",
   "scripts": {
     "test": ""
   },
@@ -11,6 +11,9 @@
   "dependencies": {
 	  "node-static": "*",
 	  "requirejs": "^2.0",
-	  "phaser-ce": "^2.0"
+	  "phaser-ce": "^2.0",
+    "eureca.io": "^0.7.1",
+    "engine.io": "^2.1.0",
+    "express": "^4.15.2"
   }
 }
