@@ -15,6 +15,10 @@ define(function(require){
         return this.queue.pop();
     }
 
+    ActionsQueue.prototype.shift=function () {
+        return this.queue.shift();
+    }
+
     ActionsQueue.prototype.has=function () {
         return this.queue.length>0;
     }

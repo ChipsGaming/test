@@ -10,6 +10,7 @@ define(function (require) {
         this.game=game;
         this.players={};
         this.step=step;
+        this.lastId=-1;
     }
 
     World.prototype.createSprite=function(id) {        
@@ -36,6 +37,8 @@ define(function (require) {
         var state=new UnitState(id,player.x,player.y);
         state.remote=player.remote;        
         state.cmdId=data.cmdId;
+
+        this.lastId=data.cmdId;        
         return state;
     }
 
