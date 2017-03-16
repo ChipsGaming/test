@@ -7,8 +7,6 @@ define(function (require) {
         this.x=x;
         this.y=y;
         this.id=id;
-        /*this.cmdId=undefined;
-        this.remote=undefined;*/
         this.keys=[];
     }
     

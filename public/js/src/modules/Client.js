@@ -18,7 +18,7 @@ define ( function (require) {
             update: update
         }); 
     
-     world=new World(staticSettings.step.step,game);
+     world=new World(staticSettings.step,game);
 
     //-------Proxy
 
@@ -39,14 +39,22 @@ define ( function (require) {
     }
 
     client.exports.sendResult=function (state) {
-        var localState=cmds[state.cmdId];
-        if (localState!=undefined) {
-            if (localState)
-            world.setPlayerState(myId,state);
+        if (cmds[state.cmdId]!=undefined) {
+            var localState=cmds[state.cmdId].state;
+            delete cmds[state.cmdId];
+            if (localState!=undefined) {
+                if (!localState.equal(state)) {
+                    console.log('sync::',localState,state);
+                    world.setPlayerState(myId,state);
+                    for (var c in cmds) {
+                        var cmd=cmds[c];
+                        cmd.state=world.doAction(cmd.data);
+                    }
+                }
+            }
         }
     }
 
-    //--------
 
     function preload(game) {
         game.load.image('background','img/background.png');
@@ -61,19 +69,20 @@ define ( function (require) {
 
     function update(game) {
             var data=new UnitState(myId,0,0,myId,undefined);
+            //console.log(data);
             if (cursors.left.isDown) data.addCommand('left'); 
             if (cursors.right.isDown) data.addCommand('right'); 
             if (cursors.up.isDown) data.addCommand('up');
             if (cursors.down.isDown) data.addCommand('down');
 
             if (data.isModifiable()) {
-                data.cmdId=cmdPos;                
-                cmdPos++;                    
+                data.cmdId=cmdPos;  
                 serverProxy.changeState(data);
                 
                 cmds[cmdPos]={};
                 cmds[cmdPos].data=data;
-                cmds[cmdPos].state=world.doAction(data);                            
+                cmds[cmdPos].state=world.doAction(data);
+                cmdPos++;
             }
     }
     

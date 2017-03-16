@@ -21,12 +21,12 @@ define(function (require) {
     }
 
     //Выполняет команду игрока в симуляторе
-    World.prototype.doAction=function(data) {
+    World.prototype.doAction=function(data) { 
         var id = data.id;
         var player=this.players[id];
         if (player!=undefined) {
             for(var c in data.keys) {
-                var cmd=data.keys[c];                
+                var cmd=data.keys[c];
                 player.x+=cmd=='left'?-1*this.step:0;
                 player.x+=cmd=='right'?this.step:0;
                 player.y+=cmd=='down'?this.step:0;
