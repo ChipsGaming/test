@@ -14,6 +14,7 @@ define ( function (require) {
     var serverProxy;
     var cursors;
     var cmdId=0;
+    var allId={};
 
     var lastId=-1;
 
@@ -48,16 +49,15 @@ define ( function (require) {
 
     client.exports.sendResult=function (state) {
         while (cmdQueue.has()) {
-
+            var cmd=cmdQueue.shift();
             if (state.cmdId>=lastId) {
-                lastId=state.cmdId;
-
-                var cmd=cmdQueue.shift();
+                lastId=state.cmdId;                    
                 if (cmd.data.cmdId<state.cmdId) continue;
                 if (cmd.data.cmdId==state.cmdId) {
                     if (cmd.state.equal(state)) break;
-                    console.log(cmd.state,state);
-                    world.setPlayerState(myId,state);                
+                    console.log('old_state:',cmd.state);
+                    console.log('new_state:',state);
+                    world.setPlayerState(myId,state);
                 }
                 world.doAction(cmd.data);
             }
@@ -75,21 +75,25 @@ define ( function (require) {
         cursors=game.input.keyboard.createCursorKeys();
     }
 
-    function update(game) {
+    function update(game) {            
             var data=new UnitState(myId,0,0);
             if (cursors.left.isDown) data.addCommand('left'); 
             if (cursors.right.isDown) data.addCommand('right'); 
             if (cursors.up.isDown) data.addCommand('up');
             if (cursors.down.isDown) data.addCommand('down');
 
-            if (data.isModifiable()) {
-                var tId=cmdId;
-                cmdId++;
-                data.cmdId=tId;  
-                serverProxy.changeState(data);
-                var cmd={data:data, state:world.doAction(data)};
-                cmdQueue.push(cmd);
-                world.setPlayerState(myId,cmd.state);
+            if (data.isModifiable()) { 
+                var tId=cmdId++;                
+                if (allId[tId]==undefined) {
+                    allId[tId]= true;  
+                    data.cmdId=tId;  
+                    serverProxy.changeState(data);
+                    data.lastState={x:data.x, y:data.y, cmd:data.keys.length};
+                    var cmd={data:data, state:world.doAction(data)};
+                    
+                    cmdQueue.push(cmd);
+                    world.setPlayerState(myId,cmd.state);
+                }
             }
     }
     

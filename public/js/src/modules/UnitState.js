@@ -4,10 +4,13 @@ if(typeof define !== 'function'){
 
 define(function (require) {
     function UnitState(id,x,y) {
+        this._x=0;
+        this._y=0;
         this.x=x;
         this.y=y;
         this.id=id;
         this.keys=[];
+        this._l='';
     }
     
     UnitState.prototype.addCommand=function (cmdKey) {

@@ -46,6 +46,9 @@ define(function(require){
             var id = data.id;
 
             var result=world.doAction(data);
+
+            console.log(data,result);
+
             sendSimularResult(result);      
         }
         world.syncAllStates();

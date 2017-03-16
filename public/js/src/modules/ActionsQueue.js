@@ -6,12 +6,14 @@ define(function(require){
 
     Queue=require('./Queue');
 
+    //Конструктор
     function ActionsQueue() {
         this.actionsQueue={};
         this.count=0;
         this.queue=new Queue();
     }
 
+    //При подключении клиента
     ActionsQueue.prototype.regId = function (id) {
         this.actionsQueue[id]={};
         item=this.actionsQueue[id];
@@ -20,6 +22,7 @@ define(function(require){
         this.count++;
     }
 
+    //При отключении клиента
     ActionsQueue.prototype.unregId = function (id) {
         delete this.actionsQueue[id];
         this.count--;
@@ -27,6 +30,7 @@ define(function(require){
 
 //--------------
 
+    //Добавить команду в накопительную очередь
     ActionsQueue.prototype.push = function (data) {
         var item = this.actionsQueue[data.id];
         item.inputs[data.cmdId]=data;
@@ -41,8 +45,7 @@ define(function(require){
             this.queue.push(el);
             item.expectedId++;
         }
-    }
-    
+    }    
 
     ActionsQueue.prototype.pop=function () {
         var item=this.queue.pop();     
@@ -53,7 +56,6 @@ define(function(require){
     ActionsQueue.prototype.has=function () {
         return this.queue.has();
     }
-
 
     return ActionsQueue;
 });

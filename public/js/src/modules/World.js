@@ -25,18 +25,24 @@ define(function (require) {
     World.prototype.doAction=function(data) { 
         var id = data.id;
         var player=this.players[id];
+        var state=new UnitState(id,player.x,player.y);
+        state._x=player.x;
+        state._y=player.y;
         if (player!=undefined) {
-            for(var c in data.keys) {
+            for(var c in data.keys) {                          
                 var cmd=data.keys[c];
-                player.x+=cmd=='left'?-1*this.step:0;
-                player.x+=cmd=='right'?this.step:0;
-                player.y+=cmd=='down'?this.step:0;
-                player.y+=cmd=='up'?-1*this.step:0;
+                state._l  =  cmd; 
+                state.x+=cmd=='left'?-1*this.step:0;
+                state.x+=cmd=='right'?this.step:0;
+                state.y+=cmd=='down'?this.step:0;
+                state.y+=cmd=='up'?-1*this.step:0;
             }
         }
-        var state=new UnitState(id,player.x,player.y);
+        player.x=state.x;
+        player.y=state.y;
         state.remote=player.remote;        
         state.cmdId=data.cmdId;
+        state.keys=data.keys;
 
         this.lastId=data.cmdId;        
         return state;
